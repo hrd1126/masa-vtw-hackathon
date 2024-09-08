@@ -15,9 +15,12 @@
     "vercel-build": "export DATABASE_URL=$(node ./scripts/env.mjs) && yarn run prisma:deploy && yarn run setup && yarn run build"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
     "@faker-js/faker": "^7.6.0",
     "@heroicons/react": "^2.0.18",
     "@mui/lab": "^5.0.0-alpha.93",
+    "@mui/material": "^6.0.2",
     "@prisma/client": "^4.5.0",
     "@tailwindcss/typography": "^0.5.9",
     "axios": "^1.1.3",
