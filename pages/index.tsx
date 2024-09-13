@@ -1,50 +1,60 @@
-import * as React from 'react';
-import type { NextPage } from 'next';
-import Head from 'next/head';
-import { useRecoilState } from 'recoil';
-import { homePageBookSumState, homePageQueryState } from 'atoms';
+import React from "react"
+import { GetStaticProps } from "next"
+import Layout from "../components/Layout"
+import Post, { PostProps } from "../components/Post"
 
-import CommonLayout from 'components/v2/Layout';
-import { FilteredChips } from 'components/v2/Chips/FilteredChips';
-import BookList from 'components/v2/Cards/ShoppingItemCardList';
-import Pagination from 'components/v2/Pagination';
-import { PAGE_SIZE } from 'const';
+export const getStaticProps: GetStaticProps = async () => {
+  const feed = [
+    {
+      id: "1",
+      title: "Prisma is the perfect ORM for Next.js",
+      content: "[Prisma](https://github.com/prisma/prisma) and Next.js go _great_ together!",
+      published: false,
+      author: {
+        name: "Nikolas Burk",
+        email: "burk@prisma.io",
+      },
+    },
+  ]
+  return { 
+    props: { feed }, 
+    revalidate: 10 
+  }
+}
 
-const Home: NextPage = () => {
-  const [homePageQueryData, setHomePageQueryData] =
-    useRecoilState(homePageQueryState);
-  const [homePageBookSum] = useRecoilState(homePageBookSumState);
+type Props = {
+  feed: PostProps[]
+}
 
-  const handleClickPagination = (page: number) => {
-    setHomePageQueryData({ ...homePageQueryData, page });
-  };
-
+const Blog: React.FC<Props> = (props) => {
   return (
-    <>
-      <Head>
-        <title>Bookstore Home</title>
-        <meta name='description' content='Bookstore Home Page' />
-        <link rel='icon' href='/favicon.ico' />
-      </Head>
+    <Layout>
+      <div className="page">
+        <h1>Public Feed</h1>
+        <main>
+          {props.feed.map((post) => (
+            <div key={post.id} className="post">
+              <Post post={post} />
+            </div>
+          ))}
+        </main>
+      </div>
+      <style jsx>{`
+        .post {
+          background: white;
+          transition: box-shadow 0.1s ease-in;
+        }
 
-      <CommonLayout>
-        {(homePageQueryData.sort || homePageQueryData.type) && (
-          <FilteredChips
-            data={homePageQueryData}
-            onChange={setHomePageQueryData}
-          />
-        )}
-        <BookList page={homePageQueryData?.page || 1} pageSize={PAGE_SIZE} />
-        <div className='flex justify-center pt-6'>
-          <Pagination
-            currentPage={homePageQueryData?.page || 1}
-            pages={Math.round(homePageBookSum / PAGE_SIZE)}
-            onClick={handleClickPagination}
-          />
-        </div>
-      </CommonLayout>
-    </>
-  );
-};
+        .post:hover {
+          box-shadow: 1px 1px 3px #aaa;
+        }
 
-export default Home;
+        .post + .post {
+          margin-top: 2rem;
+        }
+      `}</style>
+    </Layout>
+  )
+}
+
+export default Blog
